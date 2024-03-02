@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <stack>
 #include "API.h"
 
 using namespace std;
@@ -18,6 +19,7 @@ int map[16][16]{
         {10, 9, 8, 7, 6, 5, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10},
         {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
         {8, 7, 6, 5, 4, 3, 2, 1 ,1, 2 ,3, 4, 5 ,6, 7, 8},
+        {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6 ,7},
         {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6 ,7},
         {8, 7, 6, 5, 4, 3, 2, 1 ,1, 2 ,3, 4, 5 ,6, 7, 8},
         {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
@@ -153,6 +155,14 @@ void updateCoordinates(){
     }
 }
 
+void updateGrid(){
+    for (int i = 0; i < 16; i++){
+        for (int v = 0; v < 16; v++){
+            API::setText(i, v, to_string(map[i][v]));
+        }
+    }
+}
+
 void mapMove() {
     double tmp = rand3();
     if (API::wallLeft() && API::wallRight() && API::wallFront()){
@@ -209,7 +219,10 @@ void resetStack(){
 }
 
 void updateMap(){
-    //update the text with new numbers from map array
+    switch (currentDirection){
+        case 'n':
+            switch()
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -221,6 +234,7 @@ int main(int argc, char* argv[]) {
         updateWallMap(currentX, currentY, currentDirection);
         updateStack();
         mapMove();
+        updateGrid();
         log("Current X: " + std::to_string(currentX) + " Current Y: " + std::to_string(currentY));
         if (API::wasReset()){
             currentDirection = 'n';
