@@ -7,28 +7,35 @@
 using namespace std;
 using std::string;
 
+struct nonDirections{
+    int left;
+    int right;
+    int back;
+};
+
 //initialize robot to be facing forward
 int currentX = 0;
 int currentY = 0;
 char currentDirection = 'n';
 int map[16][16]{
-        {14, 13, 12, 11, 10, 9, 8 ,7 ,7 ,8, 9, 10, 11, 12, 13, 14},
-        {13, 12, 11, 10, 9, 8, 7, 6, 6, 7, 8, 9, 10, 11, 12, 13},
-        {12, 11, 10, 9, 8, 7, 6, 5, 5, 6, 7, 8, 9, 10, 11, 12},
-        {11, 10, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 8, 9, 10, 11},
-        {10, 9, 8, 7, 6, 5, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10},
-        {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
-        {8, 7, 6, 5, 4, 3, 2, 1 ,1, 2 ,3, 4, 5 ,6, 7, 8},
-        {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6 ,7},
-        {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6 ,7},
-        {8, 7, 6, 5, 4, 3, 2, 1 ,1, 2 ,3, 4, 5 ,6, 7, 8},
-        {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
-        {10, 9, 8, 7, 6, 5, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10},
-        {11, 10, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 8, 9, 10, 11},
-        {12, 11, 10, 9, 8, 7, 6, 5, 5, 6, 7, 8, 9, 10, 11, 12},
-        {13, 12, 11, 10, 9, 8, 7, 6, 6, 7, 8, 9, 10, 11, 12, 13},
-        {14, 13, 12, 11, 10, 9, 8 ,7 ,7 ,8, 9, 10, 11, 12, 13, 14},
+        {14, 13, 12, 11, 10,  9,  8,  7,  7,  8,  9, 10, 11, 12, 13, 14},
+        {13, 12, 11, 10,  9,  8,  7,  6,  6,  7,  8,  9, 10, 11, 12, 13},
+        {12, 11, 10,  9,  8,  7,  6,  5,  5,  6,  7,  8,  9, 10, 11, 12},
+        {11, 10,  9,  8,  7,  6,  5,  4,  4,  5,  6,  7,  8,  9, 10, 11},
+        {10,  9,  8,  7,  6,  5,  4,  3,  3,  4,  5,  6,  7,  8,  9, 10},
+        { 9,  8,  7,  6,  5,  4,  3,  2,  2,  3,  4,  5,  6,  7,  8,  9},
+        { 8,  7,  6,  5,  4,  3,  2,  1,  1,  2,  3,  4,  5,  6,  7,  8},
+        { 7,  6,  5,  4,  3,  2,  1,  0,  0,  1,  2,  3,  4,  5,  6,  7},
+        { 7,  6,  5,  4,  3,  2,  1,  0,  0,  1,  2,  3,  4,  5,  6,  7},
+        { 8,  7,  6,  5,  4,  3,  2,  1,  1,  2,  3,  4,  5,  6,  7,  8},
+        { 9,  8,  7,  6,  5,  4,  3,  2,  2,  3,  4,  5,  6,  7,  8,  9},
+        {10,  9,  8,  7,  6,  5,  4,  3,  3,  4,  5,  6,  7,  8,  9, 10},
+        {11, 10,  9,  8,  7,  6,  5,  4,  4,  5,  6,  7,  8,  9, 10, 11},
+        {12, 11, 10,  9,  8,  7,  6,  5,  5,  6,  7,  8,  9, 10, 11, 12},
+        {13, 12, 11, 10,  9,  8,  7,  6,  6,  7,  8,  9, 10, 11, 12, 13},
+        {14, 13, 12, 11, 10,  9,  8,  7,  7,  8,  9, 10, 11, 12, 13, 14},
 };
+std::stack<int> xStack;
 
 double rand3(){
     random_device rd;
@@ -45,7 +52,6 @@ void log(const string& text) {
 
 //allow the user to tell current direction and turning direction and return the new direction
 void setDirection(char Direction, int turningDirection){
-    //needs to implement current direction and return new direction char
     if (turningDirection == 'R' || turningDirection == 'L'){
         if (Direction == 'n'){
             if (turningDirection == 'L') {
@@ -138,10 +144,6 @@ void updateWallMap(int x, int y, char direction){
     }
 }
 
-void updateStack(){
-    //update the stack here
-}
-
 void updateCoordinates(){
     //update currentX and currentY here
     if (currentDirection == 'n'){
@@ -161,6 +163,35 @@ void updateGrid(){
             API::setText(i, v, to_string(map[i][v]));
         }
     }
+}
+
+nonDirections nonFrontDirection(){
+    nonDirections tmp;
+    if (currentDirection == 'n'){
+        tmp.left = map[currentX--][currentY];
+        tmp.right = map[currentX++][currentY];
+        tmp.back = map[currentX][currentY--];
+    } else if (currentDirection == 'e'){
+        tmp.left = map[currentX][currentY++];
+        tmp.right = map[currentX][currentY--];
+        tmp.back = map[currentX--][currentY];
+    } else if (currentDirection == 's'){
+        tmp.left = map[currentX++][currentY];
+        tmp.right = map[currentX--][currentY];
+        tmp.back = map[currentX][currentY++];
+    } else {
+        tmp.left = map[currentX][currentY--];
+        tmp.right = map[currentX][currentY++];
+        tmp.back = map[currentX++][currentY];
+    }
+    return tmp;
+}
+
+void updateStack(){
+    xStack.push(map[currentX][currentY]);
+    xStack.push(nonFrontDirection().left);
+    xStack.push(nonFrontDirection().right);
+    xStack.push(nonFrontDirection().back);
 }
 
 void mapMove() {
@@ -193,36 +224,19 @@ void mapMove() {
     } else if (!API::wallLeft()){
         setDirection(currentDirection, 'L');
     }
-//    if (API::wallFront()) {
-//        if (API::wallFront() && API::wallLeft() && API::wallRight()) {
-//            setDirection(currentDirection, 'L');
-//            setDirection(currentDirection, 'L');
-//        } else if (API::wallFront() && API::wallLeft()) {
-//            setDirection(currentDirection, 'R');
-//        } else if (API::wallFront() && API::wallRight()) {
-//            setDirection(currentDirection, 'L');
-//        } else if (API::wallFront()){
-//            int tmp = rand();
-//            if (tmp == 0){
-//                setDirection(currentDirection, 'L');
-//            } else {
-//                setDirection(currentDirection, 'R');
-//            }
-//        }
-//    }
     API::moveForward();
     updateCoordinates();
 }
 
 void resetStack(){
     //reset the stack to starting value
+    while (!xStack.empty()){
+        xStack.pop();
+    }
 }
 
 void updateMap(){
-    switch (currentDirection){
-        case 'n':
-            switch()
-    }
+    //update map with the theoretical shortest number of moves to the center
 }
 
 int main(int argc, char* argv[]) {
